@@ -45,9 +45,18 @@ export default function TodoApp() {
     setEditingText('');
   }
 
+  const remaining = todos.filter((todo) => !todo.completed).length;
+
   return (
     <main className={styles.main}>
-      <h1>Todo List</h1>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Todo List</h1>
+        {todos.length > 0 && (
+          <span className={styles.count}>
+            {remaining} {remaining === 1 ? 'task' : 'tasks'} left
+          </span>
+        )}
+      </div>
       <form onSubmit={handleAdd} className={styles.form}>
         <input
           type="text"
@@ -56,46 +65,58 @@ export default function TodoApp() {
           placeholder="Add a todo"
           aria-label="New todo text"
         />
-        <button type="submit">Add</button>
+        <button type="submit" className={styles.addButton}>
+          Add
+        </button>
       </form>
-      <ul className={styles.list}>
-        {todos.map((todo) => (
-          <li key={todo.id} className={styles.item}>
-            {editingId === todo.id ? (
-              <>
-                <input
-                  type="text"
-                  value={editingText}
-                  onChange={(event) => setEditingText(event.target.value)}
-                  aria-label="Edit todo text"
-                />
-                <button type="button" onClick={() => commitEdit(todo.id)}>
-                  Save
-                </button>
-                <button type="button" onClick={cancelEdit}>
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                <input
-                  type="checkbox"
-                  checked={todo.completed}
-                  onChange={() => setTodos((prev) => toggleTodo(prev, todo.id))}
-                  aria-label={`Mark "${todo.text}" as ${todo.completed ? 'incomplete' : 'complete'}`}
-                />
-                <span className={todo.completed ? styles.completed : undefined}>{todo.text}</span>
-                <button type="button" onClick={() => startEdit(todo)}>
-                  Edit
-                </button>
-                <button type="button" onClick={() => setTodos((prev) => deleteTodo(prev, todo.id))}>
-                  Delete
-                </button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
+      {todos.length === 0 ? (
+        <p className={styles.empty}>No tasks yet — add one above to get started.</p>
+      ) : (
+        <ul className={styles.list}>
+          {todos.map((todo) => (
+            <li key={todo.id} className={styles.item}>
+              {editingId === todo.id ? (
+                <>
+                  <input
+                    type="text"
+                    className={styles.editInput}
+                    value={editingText}
+                    onChange={(event) => setEditingText(event.target.value)}
+                    aria-label="Edit todo text"
+                  />
+                  <button type="button" className={styles.saveButton} onClick={() => commitEdit(todo.id)}>
+                    Save
+                  </button>
+                  <button type="button" className={styles.iconButton} onClick={cancelEdit}>
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="checkbox"
+                    className={styles.checkbox}
+                    checked={todo.completed}
+                    onChange={() => setTodos((prev) => toggleTodo(prev, todo.id))}
+                    aria-label={`Mark "${todo.text}" as ${todo.completed ? 'incomplete' : 'complete'}`}
+                  />
+                  <span className={todo.completed ? styles.completed : undefined}>{todo.text}</span>
+                  <button type="button" className={styles.iconButton} onClick={() => startEdit(todo)}>
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={() => setTodos((prev) => deleteTodo(prev, todo.id))}
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
